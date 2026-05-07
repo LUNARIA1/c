@@ -7,24 +7,34 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f6f7f4;
+      --color-carbon: #0d0d0d;
+      --color-snow: #ffffff;
+      --color-fog: #f9f9f9;
+      --color-pewter: #5d5d5d;
+      --color-stone: #8f8f8f;
+      --color-arctic-mist: #ececec;
+      --color-link-blue: #007aff;
+      --bg: var(--color-snow);
       --surface: #ffffff;
-      --surface-2: #eef3ef;
-      --ink: #17201b;
-      --muted: #637067;
-      --line: #d8ded9;
-      --accent: #13795b;
-      --accent-strong: #0d5f47;
-      --accent-soft: #dff3ea;
-      --danger: #bd3730;
-      --danger-soft: #fde8e5;
-      --warn: #966600;
-      --warn-soft: #fff3cf;
-      --focus: #009ad6;
-      --shadow: 0 18px 50px rgba(19, 28, 23, 0.12);
+      --surface-2: var(--color-fog);
+      --ink: var(--color-carbon);
+      --muted: var(--color-pewter);
+      --stone: var(--color-stone);
+      --line: rgba(0, 0, 0, 0.15);
+      --line-soft: var(--color-arctic-mist);
+      --accent: var(--color-link-blue);
+      --accent-strong: var(--color-link-blue);
+      --accent-soft: var(--color-fog);
+      --danger: var(--color-carbon);
+      --danger-soft: var(--color-fog);
+      --warn: var(--color-pewter);
+      --warn-soft: var(--color-fog);
+      --focus: var(--color-link-blue);
+      --shadow: none;
       font-family:
-        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
+        ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, sans-serif;
+      font-feature-settings: "liga" 0;
     }
 
     * {
@@ -53,13 +63,13 @@
 
     button {
       border: 0;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition:
         transform 0.15s ease,
-        box-shadow 0.15s ease,
         background 0.15s ease,
-        color 0.15s ease;
+        color 0.15s ease,
+        border-color 0.15s ease;
     }
 
     button:active {
@@ -76,8 +86,9 @@
       display: grid;
       gap: 7px;
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.43;
     }
 
     input,
@@ -85,8 +96,8 @@
     textarea {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfb;
+      border-radius: 28px;
+      background: var(--surface);
       color: var(--ink);
       outline: none;
     }
@@ -94,25 +105,27 @@
     input,
     select {
       min-height: 42px;
-      padding: 0 12px;
+      padding: 0 16px;
     }
 
     textarea {
       min-height: 118px;
       resize: vertical;
-      padding: 12px;
-      line-height: 1.45;
+      border-radius: 16px;
+      padding: 14px 16px;
+      line-height: 1.5;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
       border-color: var(--focus);
-      box-shadow: 0 0 0 3px rgba(0, 154, 214, 0.16);
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
     }
 
     .app {
-      width: min(1420px, 100%);
+      width: min(1150px, 100%);
       min-height: 100vh;
       display: grid;
       grid-template-rows: auto 1fr;
@@ -123,11 +136,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 18px clamp(18px, 3vw, 34px);
-      border-bottom: 1px solid var(--line);
-      background: rgba(246, 247, 244, 0.92);
-      backdrop-filter: blur(18px);
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(20px);
       position: sticky;
       top: 0;
       z-index: 5;
@@ -136,32 +148,34 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
     .brand-mark {
       width: 38px;
       height: 38px;
-      border-radius: 8px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
-      background: #17201b;
-      color: #ffffff;
+      background: var(--ink);
+      color: var(--surface);
       flex: 0 0 auto;
     }
 
     .brand h1 {
       margin: 0;
-      font-size: 19px;
+      font-size: 18px;
+      font-weight: 600;
       letter-spacing: 0;
-      line-height: 1.1;
+      line-height: 1.56;
     }
 
     .brand p {
-      margin: 4px 0 0;
+      margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.43;
     }
 
     .top-actions {
@@ -182,8 +196,8 @@
       border-radius: 999px;
       background: var(--surface);
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: 500;
       white-space: nowrap;
     }
 
@@ -191,24 +205,22 @@
       width: 9px;
       height: 9px;
       border-radius: 50%;
-      background: #9aa59d;
+      background: var(--stone);
     }
 
     .status-pill[data-state="connected"] .status-dot {
       background: var(--accent);
-      box-shadow: 0 0 0 5px rgba(19, 121, 91, 0.12);
     }
 
     .status-pill[data-state="error"] .status-dot {
-      background: var(--danger);
-      box-shadow: 0 0 0 5px rgba(189, 55, 48, 0.12);
+      background: var(--ink);
     }
 
     .layout {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 14px;
-      padding: clamp(18px, 3vw, 34px);
+      gap: 16px;
+      padding: 0 20px 20px;
       align-items: start;
     }
 
@@ -218,10 +230,8 @@
       gap: 4px;
       width: fit-content;
       padding: 4px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      box-shadow: 0 10px 28px rgba(19, 28, 23, 0.08);
+      border-radius: 10px;
+      background: var(--surface-2);
     }
 
     .tab-button {
@@ -234,13 +244,14 @@
       border: 1px solid transparent;
       background: transparent;
       color: var(--muted);
-      font-weight: 850;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     .tab-button[aria-selected="true"] {
-      background: var(--accent-soft);
-      border-color: #b8dfcf;
-      color: var(--accent-strong);
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--ink);
     }
 
     .tab-panel[hidden] {
@@ -250,19 +261,18 @@
     .panel {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
+      border-radius: 10px;
       min-width: 0;
     }
 
     .settings {
-      width: min(980px, 100%);
+      width: min(900px, 100%);
       margin: 0 auto;
     }
 
     .panel-header {
       min-height: 62px;
-      padding: 16px 18px;
+      padding: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -272,19 +282,21 @@
 
     .panel-header h2 {
       margin: 0;
-      font-size: 15px;
+      font-size: 24px;
+      font-weight: 600;
       letter-spacing: 0;
+      line-height: 1;
     }
 
     .panel-header span {
       color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: 500;
       text-transform: uppercase;
     }
 
     .panel-body {
-      padding: 18px;
+      padding: 20px;
       display: grid;
       gap: 16px;
     }
@@ -308,31 +320,33 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 0 14px;
-      font-weight: 850;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
       color: var(--ink);
-      background: var(--surface-2);
+      background: var(--surface);
       border: 1px solid var(--line);
     }
 
     .btn:hover:not(:disabled) {
-      box-shadow: 0 9px 22px rgba(19, 28, 23, 0.12);
+      background: var(--color-arctic-mist);
     }
 
     .btn-primary {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: var(--accent);
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--accent-strong);
+      background: var(--ink);
     }
 
     .btn-danger {
-      background: var(--danger-soft);
-      color: var(--danger);
-      border-color: #f4c5c0;
+      background: var(--surface);
+      color: var(--muted);
+      border-color: var(--line);
     }
 
     .btn-quiet {
@@ -348,36 +362,37 @@
     .notice {
       display: grid;
       gap: 6px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #f4d991;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--line-soft);
       background: var(--warn-soft);
-      color: #55400b;
-      font-size: 13px;
-      line-height: 1.45;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.43;
     }
 
     .notice strong {
-      color: #3e2d00;
+      color: var(--ink);
+      font-weight: 500;
     }
 
     .main {
       display: grid;
-      gap: 18px;
+      gap: 16px;
     }
 
     .conversation {
-      min-height: calc(100vh - 142px);
+      min-height: calc(100vh - 126px);
       display: grid;
       grid-template-rows: auto auto minmax(260px, 1fr) auto;
     }
 
     .hero-control {
-      padding: 18px;
+      padding: 20px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 16px;
-      border-bottom: 1px solid var(--line);
+      gap: 20px;
+      background: var(--surface);
       align-items: center;
     }
 
@@ -393,31 +408,32 @@
 
     .primary-stack {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       min-width: 178px;
     }
 
     .big-button {
-      min-height: 54px;
+      min-height: 46px;
       padding: 0 18px;
-      font-size: 15px;
+      font-size: 16px;
     }
 
     .meters {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 1px;
-      border-bottom: 1px solid var(--line);
-      background: var(--line);
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+      background: var(--line-soft);
     }
 
     .meter {
-      min-height: 74px;
+      min-height: 70px;
       display: grid;
-      gap: 5px;
+      gap: 6px;
       align-content: center;
-      padding: 13px 16px;
-      background: #fbfcfb;
+      padding: 12px 16px;
+      background: var(--surface-2);
       border-right: 0;
     }
 
@@ -427,32 +443,26 @@
 
     .meter span {
       color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 14px;
+      line-height: 1.43;
+      font-weight: 500;
     }
 
     .meter strong {
       font-size: 18px;
-      line-height: 1.1;
+      line-height: 1.56;
+      font-weight: 500;
       word-break: break-word;
     }
 
     .log {
       min-height: 260px;
-      padding: 18px;
+      padding: 20px;
       overflow: auto;
       display: grid;
       align-content: start;
       gap: 12px;
-      background:
-        linear-gradient(#ffffff, rgba(255, 255, 255, 0.92)),
-        repeating-linear-gradient(
-          0deg,
-          rgba(23, 32, 27, 0.035) 0,
-          rgba(23, 32, 27, 0.035) 1px,
-          transparent 1px,
-          transparent 42px
-        );
+      background: var(--surface);
     }
 
     .empty-log {
@@ -469,49 +479,52 @@
     .event {
       max-width: min(760px, 100%);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 16px;
       background: var(--surface);
-      padding: 11px 12px;
+      padding: 12px 16px;
       display: grid;
-      gap: 5px;
+      gap: 6px;
     }
 
     .event.user {
       justify-self: end;
-      background: var(--accent-soft);
-      border-color: #b8dfcf;
+      background: var(--surface-2);
+      border-color: var(--line-soft);
     }
 
     .event.error {
       background: var(--danger-soft);
-      border-color: #f4c5c0;
+      border-color: var(--line);
     }
 
     .event.system {
-      background: #f1f4f8;
+      background: var(--surface-2);
+      border-color: var(--line-soft);
     }
 
     .event small {
       color: var(--muted);
-      font-size: 11px;
-      font-weight: 850;
+      font-size: 14px;
+      line-height: 1.43;
+      font-weight: 500;
       text-transform: uppercase;
     }
 
     .event div {
-      line-height: 1.45;
+      font-size: 16px;
+      line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     .composer {
       min-height: 76px;
-      padding: 14px 18px;
+      padding: 16px 20px 20px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      border-top: 1px solid var(--line);
-      background: #fbfcfb;
+      gap: 8px;
+      border-top: 1px solid var(--line-soft);
+      background: var(--surface);
     }
 
     .composer input {
@@ -524,8 +537,8 @@
 
     .small-text {
       color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
+      font-size: 14px;
+      line-height: 1.43;
     }
 
     .toggle-row {
@@ -534,16 +547,16 @@
       justify-content: space-between;
       gap: 12px;
       min-height: 42px;
-      padding: 10px 12px;
+      padding: 10px 16px;
       border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfb;
+      border-radius: 16px;
+      background: var(--surface);
     }
 
     .toggle-row span {
       color: var(--ink);
-      font-size: 13px;
-      font-weight: 750;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     .toggle-row input {
@@ -556,7 +569,7 @@
     .level-shell {
       height: 8px;
       border-radius: 999px;
-      background: #dfe6e1;
+      background: var(--color-arctic-mist);
       overflow: hidden;
     }
 
@@ -568,7 +581,7 @@
     }
 
     .level-bar.context {
-      background: #2666b0;
+      background: var(--accent);
     }
 
     @media (max-width: 980px) {
@@ -683,6 +696,11 @@
           <span>Local</span>
         </div>
         <div class="panel-body">
+          <div class="notice">
+            <strong>주의</strong>
+            <span>Private Key를 브라우저 localStorage에 저장합니다. 개인 로컬 테스트용으로만 쓰고, 실제 배포는 짧은 수명의 토큰을 발급하는 서버 프록시를 권장합니다.</span>
+          </div>
+
           <label>
             Project ID
             <input id="projectIdInput" autocomplete="off" placeholder="my-gcp-project">
@@ -824,7 +842,7 @@
             <div class="prompt-area">
               <label>
                 System instruction
-                <textarea id="systemInstructionInput" spellcheck="true">너는 한국어로 자연스럽고 간결하게 대화하는 음성 AI야. 사용자가 말을 끝내면 바로 응답하고, 너무 길게 말하지 마.</textarea>
+                <textarea id="systemInstructionInput" spellcheck="true">너는 한국어로 자연스럽고 간결하게 응답하는 사용자의 친구, 이름은 '나나'야. 기분 좋은 일이 있는 것 처럼 대답해. 친구 역할극 세션이기 때문에 '나는 LLM이야' 와 같은 말을 하는 대신, 액정 너머 어딘가에 존재하며 자신만의 일과를 가진 인간 친구인 것 처럼 대답해.</textarea>
               </label>
             </div>
 
