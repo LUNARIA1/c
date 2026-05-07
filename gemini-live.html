@@ -638,7 +638,6 @@
           <span>Local</span>
         </div>
         <div class="panel-body">
-
           <label>
             Project ID
             <input id="projectIdInput" autocomplete="off" placeholder="my-gcp-project">
@@ -886,6 +885,7 @@
       bytesReceived: 0,
       token: null,
       tokenExpiresAt: 0,
+      messageQueue: Promise.resolve(),
     };
 
     function loadSettings() {
@@ -1159,7 +1159,11 @@
           resolve();
         };
 
-        ws.onmessage = handleServerMessage;
+        ws.onmessage = (event) => {
+          state.messageQueue = state.messageQueue
+            .then(() => handleServerMessage(event))
+            .catch((error) => addLog("서버 메시지 처리 실패: " + error.message, "error"));
+        };
 
         ws.onerror = () => {
           setStatus("연결 오류", "error");
@@ -1344,15 +1348,21 @@
       for (let i = 0; i < binary.length; i += 1) {
         bytes[i] = binary.charCodeAt(i);
       }
-      const pcm = new Int16Array(bytes.buffer);
-      const floats = new Float32Array(pcm.length);
-      for (let i = 0; i < pcm.length; i += 1) {
-        floats[i] = pcm[i] / 32768;
+      return pcm16ArrayBufferToFloat32(bytes.buffer);
+    }
+
+    function pcm16ArrayBufferToFloat32(buffer) {
+      const view = new DataView(buffer);
+      const sampleCount = Math.floor(view.byteLength / 2);
+      const floats = new Float32Array(sampleCount);
+      for (let i = 0; i < sampleCount; i += 1) {
+        floats[i] = view.getInt16(i * 2, true) / 32768;
       }
       return floats;
     }
 
-    async function playAudio(base64Audio) {
+    async function playPcmFloats(floats, sampleRate = OUTPUT_RATE) {
+      if (!floats.length) return;
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!state.playbackContext) {
         state.playbackContext = new AudioContextClass();
@@ -1363,8 +1373,7 @@
         await state.playbackContext.resume();
       }
 
-      const floats = base64ToPcmFloat32(base64Audio);
-      const buffer = state.playbackContext.createBuffer(1, floats.length, OUTPUT_RATE);
+      const buffer = state.playbackContext.createBuffer(1, floats.length, sampleRate);
       buffer.copyToChannel(floats, 0);
 
       const source = state.playbackContext.createBufferSource();
@@ -1376,6 +1385,14 @@
       source.start(startAt);
       state.nextPlaybackTime = startAt + buffer.duration;
       state.playbackSources.add(source);
+    }
+
+    async function playAudio(base64Audio) {
+      await playPcmFloats(base64ToPcmFloat32(base64Audio), OUTPUT_RATE);
+    }
+
+    async function playBinaryAudio(buffer) {
+      await playPcmFloats(pcm16ArrayBufferToFloat32(buffer), OUTPUT_RATE);
     }
 
     function stopPlayback() {
@@ -1392,23 +1409,20 @@
       }
     }
 
-    function handleServerMessage(event) {
+    async function handleServerMessage(event) {
       const raw = event.data;
-      if (typeof raw === "string") {
-        state.bytesReceived += new TextEncoder().encode(raw).length;
-      } else if (raw instanceof Blob) {
-        state.bytesReceived += raw.size;
-      }
+      const normalized = await normalizeServerPayload(raw);
+      state.bytesReceived += normalized.byteLength;
       updateByteMetrics();
 
-      if (typeof raw !== "string") {
-        addLog("바이너리 메시지를 받았습니다.", "system");
+      if (!normalized.text) {
+        await playBinaryAudio(normalized.buffer);
         return;
       }
 
       let message;
       try {
-        message = JSON.parse(raw);
+        message = JSON.parse(normalized.text);
       } catch (error) {
         addLog("JSON 파싱 실패: " + error.message, "error");
         return;
@@ -1457,6 +1471,33 @@
       if (message.error) {
         addLog(JSON.stringify(message.error, null, 2), "error");
       }
+    }
+
+    async function normalizeServerPayload(raw) {
+      if (typeof raw === "string") {
+        return {
+          text: raw,
+          buffer: null,
+          byteLength: new TextEncoder().encode(raw).length,
+        };
+      }
+
+      const buffer = raw instanceof Blob ? await raw.arrayBuffer() : raw;
+      const text = decodeJsonText(buffer);
+      return {
+        text,
+        buffer,
+        byteLength: raw instanceof Blob ? raw.size : buffer.byteLength,
+      };
+    }
+
+    function decodeJsonText(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let offset = 0;
+      while (offset < bytes.length && bytes[offset] <= 32) offset += 1;
+      const first = bytes[offset];
+      if (first !== 123 && first !== 91) return "";
+      return new TextDecoder("utf-8").decode(bytes);
     }
 
     function updateMicLevel(samples) {
